@@ -1,13 +1,12 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
-import { Alert, TouchableOpacity, View } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import React, { useState } from 'react';
+import { Alert, FlatList, SafeAreaView, View } from 'react-native';
+import PostComponent from '../../Components/posts/home';
+import ProfileInfo from '../../Components/profile/ProfileInfo';
 import { getApiAxios } from '../../services/axios';
 import { getToken } from '../../utils/session/manager';
 import { NavigationProp } from '../../utils/types/navigation';
 import { Post } from '../../utils/types/post';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import ProfileInfo from '../../Components/profile/ProfileInfo';
 
 // Componente principal da tela Home
 const Home = () => {
@@ -23,7 +22,7 @@ const Home = () => {
 		try {
 			// Obtém a instância do Axios configurada
 			const api = await getApiAxios();
-			
+
 			// Faz uma chamada GET para a API
 			const response = await api.get('/api/Veteri/receitas');
 
@@ -59,6 +58,12 @@ const Home = () => {
 		}, []),
 	);
 
+	const renderPost = ({ item }: { item: Post }) => (
+		<View className="mb-8">
+			<PostComponent post={item} />
+		</View>
+	);
+
 	// Renderiza uma tela de carregamento enquanto os dados são obtidos
 	if (loading) {
 		return (
@@ -71,6 +76,9 @@ const Home = () => {
 		<View className="flex-1 bg-white">
 			{/* FlatList para renderizar os posts, mas atualmente está incompleta */}
 			<FlatList
+				data={posts}
+				keyExtractor={(item) => item.id.toString()}
+				renderItem={renderPost}
 				ListHeaderComponent={<HomeHeader />} // Cabeçalho da lista
 				contentContainerStyle={{ paddingBottom: 45 }} // Espaçamento inferior
 			/>
